@@ -1,5 +1,5 @@
 #include "BitSet.h"
-#include "master_block.hh"
+#include "header_files/master_block.hh"
 
 MasterBlock::MasterBlock(int bytes_per_block, int number_of_blocks, disk_addr_t block_map_address)
 {

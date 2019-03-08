@@ -1,3 +1,4 @@
+//josh reiss
 #include <iostream>
 #include <string>
 #include <fstream>
@@ -22,6 +23,7 @@ class BlockMap
 	}
 };
 
+//allocates memory for blockmap; returns ptr
 BlockMap* allocBlockMap(int num_bits)
 {
 	BlockMap *s = new BlockMap(num_bits);
@@ -68,6 +70,11 @@ void freeItem(BlockMap* b, int i)
 	{clearBit(b,i);}
 
 //read set from file
+//use GET_BIT b/c we want bools, not bits.
+///1) make a char array and fill it with the block where blockmap is
+///2) do GET_BIT everywhere in char array
+///2-1) if bit @ index, set bool true
+///2-2) else, set bool false
 void readBlockMap(BlockDevice *bd, BlockMap* b, disk_addr_t diskLoc)
 {
     char inarr[bd->m_bytesPerBlock];
@@ -80,24 +87,31 @@ void readBlockMap(BlockDevice *bd, BlockMap* b, disk_addr_t diskLoc)
 }
 
 //save set to file
+///i'll walk you through it...
 void writeBlockMap(BlockDevice *bd, BlockMap* b, disk_addr_t diskLoc)
 {
 	char outarr[bd->m_bytesPerBlock];
 	bool cont = true;
 	for(int i = 0; cont == true; i++)
 	{
+	  //if we have run out of room & run out of bits to write, flag that.
 		if(!(i < bd->m_bytesPerBlock) && !(i < b->sz))
 			{cont = false;}
+	  //if we still have bits to write, write them.
+	  //use SET_BIT & CLEAR_BIT b/c we want to write bits, not bools.
 		else if(i < b->sz)
 		{
 			if(b->set[i] == 1) {SET_BIT(outarr, i);}
 			else {CLEAR_BIT(outarr, i);}
 		}
+	  //if we are out of bits to write, but still have room, write 0s.
 		else {CLEAR_BIT(outarr, i);}
 	}
 	bd->writeBlock(diskLoc, outarr);
 }
 
+//cout the blockMap
+//if we read a whole empty byte, truncate
 void dumpMap(BlockMap* b)
 {
 	int trig = 8;
@@ -111,6 +125,7 @@ void dumpMap(BlockMap* b)
 	std::cout << std::endl;
 }
 
+//cout the entire blockMap. don't truncate.
 void dumpMapFull(BlockMap* b)
 {
 	for (int i = 0; i < b->sz; i++)
