@@ -1,0 +1,1 @@
+./makewords < sentences.txt | ./lowercase | sort | ./uniq | ./mismatch > badwords.txt
