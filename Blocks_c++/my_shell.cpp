@@ -193,6 +193,21 @@ int main(int argc, char** argv) {
     	else
     		{std::cout << "need to mount!!\n";}
     }
+    else if (!strcmp(splitted, "getBlockAddr"))
+    {
+    	if(mounted)
+    	{
+    		splitted = strtok(NULL, " ,-");
+    		int ind = std::stoi(splitted);
+    		splitted = strtok(NULL, " ,-");
+    		int offset = std::stoi(splitted);
+    		splitted = strtok(NULL, " ,-");
+    		bool allocy = std::stoi(splitted);
+    		std::cout << getDiskAddressOfBlock(addrToInode(imp, ind), offset, allocy, bmp) << std::endl;
+    	}
+    	else
+    		{std::cout << "need to mount!!\n";}
+    }
     else if (!strcmp(splitted, "mount"))
     {
     	splitted = strtok(NULL, " ,-");
@@ -228,9 +243,14 @@ int main(int argc, char** argv) {
     	std::cout << "Unmount filesystem:\tunmount <name>\n";
     	std::cout << "Show block map (trnc):\tblockMap\n";
     	std::cout << "Show full block map:\tblockMapFull\n";
+    	std::cout << "Show full iNode map:\tiNodeMapFull\n";
     	std::cout << "Alloc first block:\tallocBlock\n";
     	std::cout << "Set block at index:\tsetBlock <index>\n";
     	std::cout << "Free block at index:\tfreeBlock <index>\n";
+    	std::cout << "Alloc first iNode:\tallociNode\n";
+    	std::cout << "Set iNode at index:\tsetiNode <index>\n";
+    	std::cout << "Free iNode at index:\tfreeiNode <index>\n";
+    	std::cout << "Get block address:\tgetBlockAddr <index> <block_offset> <alloc_if_free>\n";
     	std::cout << "Quit program:\t\tquit\n";
     }
     else if (!strcmp(splitted, "quit"))
