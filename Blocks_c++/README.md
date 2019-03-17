@@ -12,7 +12,7 @@ If you want to see some testing, try
 > ./test.out
 
 You can also try
-> testerX.py | shell.out
+> python3 testerX.py | ./shell.out
 tester1 tests a filesystem where blockcount < bytesperblock
 	it expects 10111010
 tester2 tests a filesystem where blockcount > bytesperblock

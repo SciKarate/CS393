@@ -3,6 +3,7 @@
 #include "header_files/block_device.hh"
 #include "header_files/master_block.hh"
 #include "header_files/blockMap.h"
+#include "header_files/inode.hh"
 
 #define BLOCKSIZE 1024
 int main() {
@@ -42,9 +43,16 @@ int main() {
    	readBlockMap(s, &mappy, n->diskAddress);
     dumpMap(&mappy);
 
+    iNodeMap* i = allocateiNodeMap(5);
+    writeiNodeMap(s, i, 2, 5);
+    std::cout << i->sz << std::endl;
+    readiNodeMap(s, i, 2, 5);
+    std::cout << i->sz << std::endl;
+
     t.closeDevice();
     freeMasterBlock(n);
     std::cout << "device tests complete\n";
+    std::cout << sizeof(iNode) << std::endl;
 }
 
 /*
