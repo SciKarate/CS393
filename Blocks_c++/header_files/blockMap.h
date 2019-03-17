@@ -55,7 +55,7 @@ bool getBit(BlockMap* b, int i)
 }
 
 //alloc the first available bit. return index -1 if none.
-int allocItem(BlockMap* b)
+int allocBlock(BlockMap* b)
 {
 	for(int i = 0; i < b->sz; i++)
 	{
@@ -66,7 +66,7 @@ int allocItem(BlockMap* b)
 }
 
 //free the bit at index i
-void freeItem(BlockMap* b, int i)
+void freeBlock(BlockMap* b, int i)
 	{clearBit(b,i);}
 
 //read set from file

@@ -34,11 +34,11 @@ int main() {
     	if(i%8 == 0)
     	{
     		setBit(&mappy, i);
-    		allocItem(&mappy);
+    		allocBlock(&mappy);
     	}
     }
-    freeItem(&mappy, 0);
-    freeItem(&mappy, 16);
+    freeBlock(&mappy, 0);
+    freeBlock(&mappy, 16);
     writeBlockMap(s, &mappy, n->diskAddress);
    	readBlockMap(s, &mappy, n->diskAddress);
     dumpMap(&mappy);

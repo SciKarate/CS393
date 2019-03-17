@@ -126,7 +126,7 @@ int main(int argc, char** argv) {
     else if (!strcmp(splitted, "allocBlock"))
     {
     	if(mounted)
-    		{std::cout << allocItem(bmp) << std::endl;}
+    		{std::cout << allocBlock(bmp) << std::endl;}
     	else
     		{std::cout << "need to mount!!\n";}
     }
@@ -139,7 +139,7 @@ int main(int argc, char** argv) {
     		if(freeint >= bmp->sz)
     			{std::cout << "no.\n";}
     		else
-    			{freeItem(bmp, freeint);}
+    			{freeBlock(bmp, freeint);}
     	}
     	else
     		{std::cout << "need to mount!!\n";}
