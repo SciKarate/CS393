@@ -8,8 +8,8 @@ using iNodeAddr_t = int16_t;
 using disk_address_t = int16_t;
 using timestamp_t = int64_t;
 using block_device_t = BlockDevice*;
-#define BLOCK_PTRS_PER_INODE_STRUCT 8 // can be any length, but between 8 and 16 makes the most sense
-#define PADDING_PER_INODE 0
+#define BLOCK_PTRS_PER_INODE_STRUCT 16 // can be any length, but between 8 and 16 makes the most sense
+#define PADDING_PER_INODE 40
 
 class iNode
 {
@@ -32,35 +32,56 @@ public:
 class iNodeMap
 {
 public:
-	int sz;
 	std::vector<iNode> set;
 	iNodeMap(int size)
 	{
 		set.resize(size);
-		sz = size;
 	}
 };
 using iNodeMap_t = iNodeMap*;
 
+//cout the entire iNodeMap
+void dumpiMapFull(iNodeMap* m)
+{
+	for (int i = 0; i < m->set.size(); i++)
+		{std::cout << m->set[i].status;}
+	std::cout << "\nsize: " << m->set.size();
+	std::cout << std::endl;
+}
+
 // allocates and returns an array of iNode structures num_inodes long (aka an iNode Map)
 iNodeMap_t allocateiNodeMap(int num_inodes)
-{ 
-	iNodeMap *m = new iNodeMap(num_inodes);
+{
+	int bytes = num_inodes * 128;
+	iNodeMap *n = (iNodeMap*)malloc(bytes + 1);
+	iNodeMap* m = new(n) iNodeMap(num_inodes);
 	return m;
 }
 
 // reads an iNode map on block device bd into inode_map allocated above, at disk_address
-int readiNodeMap(BlockDevice *bd, iNodeMap_t inode_map, disk_address_t disk_address, int num_inodes)
+int readiNodeMap(BlockDevice *bd, iNodeMap* inode_map, disk_address_t disk_address, int num_inodes)
 {
-	char readbuff[bd->m_bytesPerBlock];
-	bd->readBlock(disk_address, readbuff);
-	inode_map = reinterpret_cast<iNodeMap*>(readbuff);
+	iNodeMap* checkptr = inode_map;
+	std::cout << "dad\t" << disk_address << std::endl;
+
+	int i = 0;
+	int ipb = (bd->m_bytesPerBlock/sizeof(iNode));
+	char* buf = (char*)&(inode_map[i*ipb]);
+	bd->readBlock(disk_address, buf);
+	inode_map = reinterpret_cast<iNodeMap*>(buf);
+
+	if(inode_map == checkptr)
+	{
+		std::cout << "huh. weird.\n";
+		return 1;
+	}
 	return 0;
 }
 
 // writes an iNode map to block device bd from inode_map, at disk_address
 int writeiNodeMap(BlockDevice *bd, iNodeMap_t inode_map, disk_address_t disk_address, int num_inodes)
 {
+	std::cout << "dad\t" << disk_address << std::endl;
 	bd->writeBlock(disk_address, reinterpret_cast <const char*>(inode_map));
 	return 0;
 }
@@ -68,7 +89,7 @@ int writeiNodeMap(BlockDevice *bd, iNodeMap_t inode_map, disk_address_t disk_add
 // allocate an iNode and returns its address (or -1 if none free)
 iNodeAddr_t allocateiNode (iNodeMap_t m)
 {
-	for(int i = 0; i < m->sz; i++)
+	for(int i = 0; i < m->set.size(); i++)
 	{
 		if(m->set[i].status == 0)
 		{
@@ -140,11 +161,7 @@ disk_addr_t getDiskAddressOfBlock(iNode* inode, block_offset_t b, bool alloc_if_
     return getDiskAddressOfBlockRecursive(inode, b, alloc_if_absent, inode->level, bm);
 }
 
-//cout the entire iNodeMap
-void dumpiMapFull(iNodeMap* m)
+void freeiNodeMap(iNodeMap* mb)
 {
-	for (int i = 0; i < m->sz; i++)
-		{std::cout << m->set[i].status;}
-	std::cout << "\nsize: " << m->sz;
-	std::cout << std::endl;
+	free(mb);
 }

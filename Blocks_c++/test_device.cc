@@ -43,11 +43,17 @@ int main() {
    	readBlockMap(s, &mappy, n->diskAddress);
     dumpMap(&mappy);
 
-    iNodeMap* i = allocateiNodeMap(5);
-    writeiNodeMap(s, i, 2, 5);
-    std::cout << i->sz << std::endl;
-    readiNodeMap(s, i, 2, 5);
-    std::cout << i->sz << std::endl;
+    std::cout << "Let's test iNodes!!\n";
+    iNodeMap* i = NULL;
+    i = allocateiNodeMap(8);
+    allocateiNode(i); allocateiNode(i); setiNode(i,3);
+    dumpiMapFull(i);
+    writeiNodeMap(s, i, 2, 8);
+    delete i;
+    i = new iNodeMap(8);
+    dumpiMapFull(i);
+    readiNodeMap(s, i, 2, 8);
+    dumpiMapFull(i);
 
     t.closeDevice();
     freeMasterBlock(n);
