@@ -17,7 +17,6 @@ class MasterBlock
 	{
 		bytesPerBlock = bytes_per_block;
 		blockCount = number_of_blocks;
-		iNodeCnt = bytesPerBlock/128;
 		diskAddress = block_map_address;
 		while(number_of_blocks > 0)
 		{
@@ -25,6 +24,14 @@ class MasterBlock
 			protect++;
 		}
 		diskAddress_iNodeMap = block_map_address + protect;
+
+		int ipb = bytesPerBlock/128;
+		iNodeCnt = blockCount / 128;
+		iNodeCnt -= protect;
+		while((iNodeCnt % ipb) != 0) {iNodeCnt -= 1;}
+		if(iNodeCnt < 0) iNodeCnt = 0;
+		//iNodeCnt = 8;
+		//iNodeCnt = ipb;
 	}
 	~MasterBlock()
 		{return;}

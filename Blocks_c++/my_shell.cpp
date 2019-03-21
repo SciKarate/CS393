@@ -8,6 +8,7 @@
 #include "header_files/block_device.hh"
 #include "header_files/inode.hh"
 #include <unistd.h>
+#include <stdio.h>
 #include <fcntl.h>
 #include <vector>
 
@@ -70,7 +71,7 @@ int main(int argc, char** argv) {
     else if(!strcmp(splitted, "iNodeMapFull"))
     {
     	if(mounted)
-    		{dumpiMapFull(imp);}
+    		{dumpiMapFull(imp, mbl->iNodeCnt);}
     	else
 	    	{std::cout << "need to mount!!\n";}
     }
@@ -87,6 +88,7 @@ int main(int argc, char** argv) {
     	bpb = std::stoi(splitted);
     	splitted = strtok(NULL, " ,-");
     	bcnt = std::stoi(splitted);
+    	remove(name);
     	//std::cout << "newfs " << name << " " << bpb << " " << bcnt;
       //create pointers
     	bdv = new BlockDevice(name, bpb, bcnt);
@@ -96,13 +98,15 @@ int main(int argc, char** argv) {
       //alloc block
     	setBit(bmp, mbl->diskAddress_iNodeMap);
       //init iNodes
-    	for(int i = 0; i < imp->set.size(); i++)
+    	for(int i = 0; i < mbl->iNodeCnt; i++)
     	{
-    		imp->set[i].cdate = 0;
-    		imp->set[i].mdate = 0;
-    		imp->set[i].num_bytes = 0;
-    		imp->set[i].owner_uid = 5;
+    		imp->my_nodes[i].inode_num = i;
+    		imp->my_nodes[i].cdate = 0;
+    		imp->my_nodes[i].mdate = 0;
+    		imp->my_nodes[i].num_bytes = 0;
+    		imp->my_nodes[i].owner_uid = 0xdeedfeed;
     	}
+    	dumpiMapFull(imp, mbl->iNodeCnt);
       //write data
     	writeMasterBlock(bdv, mbl, MBLOC);
     	writeBlockMap(bdv, bmp, mbl->diskAddress);
@@ -157,7 +161,7 @@ int main(int argc, char** argv) {
     else if (!strcmp(splitted, "allociNode"))
     {
     	if(mounted)
-    		{std::cout << allocateiNode(imp) << std::endl;}
+    		{std::cout << allocateiNode(imp, mbl->iNodeCnt) << std::endl;}
     	else
     		{std::cout << "need to mount!!\n";}
     }
@@ -167,7 +171,7 @@ int main(int argc, char** argv) {
     	{
     		splitted = strtok(NULL, " ,-");
     		int freeint = std::stoi(splitted);
-    		if(freeint >= imp->set.size())
+    		if(freeint >= mbl->iNodeCnt)
     			{std::cout << "no.\n";}
     		else
     			{freeiNode(imp, freeint);}
@@ -181,7 +185,7 @@ int main(int argc, char** argv) {
     	{
     		splitted = strtok(NULL, " ,-");
     		int freeint = std::stoi(splitted);
-    		if(freeint >= imp->set.size())
+    		if(freeint >= mbl->iNodeCnt)
     			{std::cout << "no.\n";}
     		else
     			{setiNode(imp, freeint);}
@@ -189,7 +193,7 @@ int main(int argc, char** argv) {
     	else
     		{std::cout << "need to mount!!\n";}
     }
-    /*else if (!strcmp(splitted, "getBlockAddr"))
+    else if (!strcmp(splitted, "getBlockAddr"))
     {
     	if(mounted)
     	{
@@ -203,7 +207,7 @@ int main(int argc, char** argv) {
     	}
     	else
     		{std::cout << "need to mount!!\n";}
-    }*/
+    }
     else if (!strcmp(splitted, "mount"))
     {
     	splitted = strtok(NULL, " ,-");
@@ -226,13 +230,18 @@ int main(int argc, char** argv) {
     }
     else if (!strcmp(splitted, "unmount"))
     {
-    	writeBlockMap(bdv, bmp, mbl->diskAddress);
-    	writeiNodeMap(bdv, imp, mbl->diskAddress_iNodeMap, mbl->iNodeCnt);
-    	delete bdv;
-    	delete bmp;
-    	freeiNodeMap(imp);
-    	freeMasterBlock(mbl);
-    	mounted = 0;
+    	if(mounted)
+    	{
+    		writeBlockMap(bdv, bmp, mbl->diskAddress);
+    		writeiNodeMap(bdv, imp, mbl->diskAddress_iNodeMap, mbl->iNodeCnt);
+    		delete bdv;
+    		delete bmp;
+    		freeiNodeMap(imp);
+    		freeMasterBlock(mbl);
+    		mounted = 0;
+    	}
+    	else
+    		{std::cout << "need to mount!!\n";}
     }
     else if (!strcmp(splitted, "help"))
     {
