@@ -1,5 +1,10 @@
 #include <iostream>
 #include <string>
+#include <unistd.h>
+#include <stdio.h>
+#include <fcntl.h>
+#include <time.h>
+#include <vector>
 
 #include <readline/readline.h>
 #include <readline/history.h>
@@ -7,10 +12,6 @@
 #include "header_files/master_block.hh"
 #include "header_files/block_device.hh"
 #include "header_files/inode.hh"
-#include <unistd.h>
-#include <stdio.h>
-#include <fcntl.h>
-#include <vector>
 
 #define MBLOC 0
 #define MAPADDR 1
@@ -28,6 +29,7 @@ std::vector<int> grabBlock(std::string deviceName)
 
 int main(int argc, char** argv) {
   std::cout << "Welcome! You can exit by pressing Ctrl+C at any time...\n";
+  std::cout << "Type 'help' to view a list of commands.\n";
 
   if (argc > 1 && std::string(argv[1]) == "-d")
   {
@@ -97,16 +99,18 @@ int main(int argc, char** argv) {
     	imp = allocateiNodeMap(mbl->iNodeCnt);
       //alloc block
     	setBit(bmp, mbl->diskAddress_iNodeMap);
+    	setBit(bmp, mbl->diskAddress);
+    	setBit(bmp, 0);
       //init iNodes
     	for(int i = 0; i < mbl->iNodeCnt; i++)
     	{
     		imp->my_nodes[i].inode_num = i;
-    		imp->my_nodes[i].cdate = 0;
-    		imp->my_nodes[i].mdate = 0;
+    		imp->my_nodes[i].cdate = time (NULL);
+    		imp->my_nodes[i].mdate = time (NULL);
     		imp->my_nodes[i].num_bytes = 0;
     		imp->my_nodes[i].owner_uid = 0xdeedfeed;
     	}
-    	dumpiMapFull(imp, mbl->iNodeCnt);
+    	//dumpiMapFull(imp, mbl->iNodeCnt);
       //write data
     	writeMasterBlock(bdv, mbl, MBLOC);
     	writeBlockMap(bdv, bmp, mbl->diskAddress);
@@ -174,7 +178,8 @@ int main(int argc, char** argv) {
     		if(freeint >= mbl->iNodeCnt)
     			{std::cout << "no.\n";}
     		else
-    			{freeiNode(imp, freeint);}
+    			{freeiNode(imp, freeint);
+    			imp->my_nodes[freeint].mdate = time (NULL);}
     	}
     	else
     		{std::cout << "need to mount!!\n";}
@@ -188,7 +193,8 @@ int main(int argc, char** argv) {
     		if(freeint >= mbl->iNodeCnt)
     			{std::cout << "no.\n";}
     		else
-    			{setiNode(imp, freeint);}
+    			{setiNode(imp, freeint);
+    			imp->my_nodes[freeint].mdate = time (NULL);}
     	}
     	else
     		{std::cout << "need to mount!!\n";}
@@ -207,6 +213,16 @@ int main(int argc, char** argv) {
     	}
     	else
     		{std::cout << "need to mount!!\n";}
+    }
+    else if (!strcmp(splitted, "nodeInfo"))
+    {
+    	if(mounted)
+    	{
+    		splitted = strtok(NULL, " ,-");
+    		int ind = std::stoi(splitted);
+    		std::cout << imp->my_nodes[ind].cdate << std::endl;
+    		std::cout << imp->my_nodes[ind].mdate << std::endl;
+    	}
     }
     else if (!strcmp(splitted, "mount"))
     {
@@ -258,6 +274,7 @@ int main(int argc, char** argv) {
     	std::cout << "Set iNode at index:\tsetiNode <index>\n";
     	std::cout << "Free iNode at index:\tfreeiNode <index>\n";
     	std::cout << "Get block address:\tgetBlockAddr <index> <block_offset> <alloc_if_free>\n";
+    	std::cout << "Get node info:\t\tnodeInfo <index>\n";
     	std::cout << "Quit program:\t\tquit\n";
     }
     else if (!strcmp(splitted, "quit"))

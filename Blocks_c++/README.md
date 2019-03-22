@@ -20,5 +20,10 @@ tester2 tests a filesystem where blockcount > bytesperblock
 tester3 tests a filesystem where blockcount = bytesperblock
 	it expects a huge string of 1s with a 0, followed by 4 dispersed 1s
 
+If you want to test iNodes, try tester4, tester5, and tester 6.
+tester 4 tests a basic iNodeMap where blockcount = bytesperblock.
+tester 5 tests iNodeMaps where blockcount nor bpp are divisible by 8.
+tester 6 tests an iNode map where blockcount > bytesperblock.
+
 ./test.out should pass valgrind perfectly.
 ./shell.out might result in some "possibly lost" blocks.

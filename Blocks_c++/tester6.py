@@ -1,12 +1,13 @@
 print("help")
 
-print("newfs hello.dev 509 4092")
+print("newfs hello.dev 512 4096")
 print("mount hello.dev")
 print("iNodeMapFull")
-i = 50
-while i > 0:
-	print("allociNode")
-	i = i - 1
+print("setiNode 2")
+print("allociNode")
+print("allociNode")
+print("freeiNode 0\nsetiNode 3\nfreeiNode 2")
+print("setiNode 24");
 print("iNodeMapFull")
 print("unmount")
 print("mount hello.dev")

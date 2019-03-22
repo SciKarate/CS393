@@ -1,12 +1,13 @@
 #pragma once
 #include <string>
-#include <vector>
+#include <time.h>
+//#include <vector>
 //#include "block_device.hh"
 
 enum inode_type_t {f, d, s}; // can be either 1 or 2 bytes
 using iNodeAddr_t = int16_t;
 using disk_address_t = int16_t;
-using timestamp_t = int64_t;
+using timestamp_t = time_t;
 using block_device_t = BlockDevice*;
 #define BLOCK_PTRS_PER_INODE_STRUCT 16 // can be any length, but between 8 and 16 makes the most sense
 #define PADDING_PER_INODE 40
@@ -39,6 +40,8 @@ public:
 		my_nodes = (iNode*)calloc(size, sizeof(iNode));
 		//my_nodes.resize(size);
 	}
+	~iNodeMap()
+		{return;}
 };
 using iNodeMap_t = iNodeMap*;
 
@@ -70,8 +73,6 @@ int readiNodeMap(BlockDevice *bd, iNodeMap* inode_map, disk_address_t disk_addre
 	int ipb = (bd->m_bytesPerBlock/sizeof(iNode));
 	int blks = num_inodes / ipb;
 	if((num_inodes % ipb) != 0) blks++;
-
-	//blks = 1;
 
 	for(int i = 0; i < blks; i++)
 	{
@@ -110,6 +111,7 @@ iNodeAddr_t allocateiNode (iNodeMap_t m, int amnt)
 		if(m->my_nodes[i].status == 0)
 		{
 			m->my_nodes[i].status = 1;
+			m->my_nodes[i].mdate = time (NULL);
 			return i;
 		}
 	}
@@ -179,5 +181,6 @@ disk_addr_t getDiskAddressOfBlock(iNode* inode, block_offmy_nodes_t b, bool allo
 
 void freeiNodeMap(iNodeMap* mb)
 {
+	mb->~iNodeMap();
 	free(mb);
 }

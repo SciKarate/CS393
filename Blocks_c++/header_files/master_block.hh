@@ -23,15 +23,18 @@ class MasterBlock
 			number_of_blocks -= bytes_per_block;
 			protect++;
 		}
+	  //protect iNodeMap from blockMap
 		diskAddress_iNodeMap = block_map_address + protect;
-
+	  //num inodes in a block
 		int ipb = bytesPerBlock/128;
-		iNodeCnt = blockCount / 128;
-		iNodeCnt -= protect;
-		while((iNodeCnt % ipb) != 0) {iNodeCnt -= 1;}
+	  //num blocks currently open
+		int nodeCap = blockCount - (protect + 1);
+	  //how many inodes go into 1/4 of open blocks.
+		iNodeCnt = (nodeCap/4) * ipb;
+	  //never more than 128.
+		if(iNodeCnt > 128) iNodeCnt = 128;
+	  //sanity check.
 		if(iNodeCnt < 0) iNodeCnt = 0;
-		//iNodeCnt = 8;
-		//iNodeCnt = ipb;
 	}
 	~MasterBlock()
 		{return;}
