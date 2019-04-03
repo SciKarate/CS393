@@ -1,0 +1,6 @@
+@echo off
+COLOR 0A
+Title = Josh's Space Game!
+mode con: cols=82 lines=25
+c:\python35\python.exe starter\main.py
+pause
