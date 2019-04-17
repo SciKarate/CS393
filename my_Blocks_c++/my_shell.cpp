@@ -8,6 +8,7 @@
 
 #include <readline/readline.h>
 #include <readline/history.h>
+#include "header_files/directory_cache.hh"
 #include "header_files/blockMap.h"
 #include "header_files/master_block.hh"
 #include "header_files/block_device.hh"

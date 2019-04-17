@@ -1,11 +1,26 @@
-#include "header_files/directory_cache.hh"
+#include "directory_cache.h"
 #include <assert.h>
 
 // Allocate a DirectoryEntry for this name->inode mapping and add it
 // to the children of parent.
 // This is used for both caching and modifying directories.
 void addChild(DirectoryEntry_t parent, char *name, INode_t inode){
-    // your code here
+    DirectoryEntry* newkid = calloc(1, sizeof(DirectoryEntry));
+    newkid->inode_ptr = inode;
+    newkid->name = name;
+    newkid->maybe_children = NULL;
+    newkid->next_sibling = NULL;
+    newkid->is_dirty = true;
+
+    if(parent->maybe_children != NULL)
+    {
+    	DirectoryEntry* curr = parent->maybe_children;
+    	while (curr->next_sibling)
+    		{curr = curr->next_sibling;}
+    	curr->next_sibling = newkid;
+    }
+    else
+    	{parent->maybe_children = newkid;}
 }
 
 // When creating the root directory entry, we need to pass the
@@ -13,7 +28,13 @@ void addChild(DirectoryEntry_t parent, char *name, INode_t inode){
 // Also, this is the one directory entry with no name. Hence the
 // special case.
 void addRoot(FileSystem_t fs, INode_t inode){
-    // your code here
+    DirectoryEntry* newroot = calloc(1, sizeof(DirectoryEntry));
+    newroot->inode_ptr = inode;
+    newroot->name = "\"\"";
+    newroot->maybe_children = NULL;
+    newroot->next_sibling = NULL;
+    newroot->is_dirty = true;
+    fs->root_dir = newroot;
 }
 
 // gets the linked list of children of a directory.
@@ -36,10 +57,28 @@ void addRoot(FileSystem_t fs, INode_t inode){
 DirectoryEntry_t getChildren(DirectoryEntry_t dir, FileSystem_t fs) {
     assert(dir && "getChildren dir == null");
     assert(dir->inode_ptr && "getChildren, inode_ptr == null");
-    assert(dir->inode_ptr->type == d && "getChildren of a non-directory");
+    assert(dir->inode_ptr->type == DirectoryType && "getChildren of a non-directory");
 
+    DirectoryEntry* curr = dir;
+    DirectoryEntry* subcurr;
+    printf(curr->name);
+    printf("\n");
+    while(curr->maybe_children!=NULL)
+    {
+    	curr = curr->maybe_children;
+    	printf(curr->name);
+    	printf("\n");
+    	subcurr = curr;
+    	while(subcurr->next_sibling!=NULL)
+    	{
+    		subcurr = subcurr->next_sibling;
+    		printf(subcurr->name);
+    		printf("\n");
+    	}
+    }
+    printf("\n");
     // your code here, probably don't return NULL
-    return NULL;
+    return curr;
 }
 
 // writes a directory to its inode.

@@ -1,0 +1,7 @@
+Welcome! You can exit by pressing Ctrl+C at any time...
+>> newfs twopy.dev 2048 100
+inode map - 16 inodes, 128 bytes per inode, 2048 bytes & 1 blocks total
+created twopy.dev with 100 blocks of 2048 bytes per block
+>> mount twopy.dev
+twopy.dev successfully mounted
+>> mkdir usr
