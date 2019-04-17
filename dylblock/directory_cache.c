@@ -62,23 +62,25 @@ DirectoryEntry_t getChildren(DirectoryEntry_t dir, FileSystem_t fs) {
     DirectoryEntry* curr = dir;
     DirectoryEntry* subcurr;
     printf(curr->name);
-    printf("\n");
+    printf("\\ ");
     while(curr->maybe_children!=NULL)
     {
     	curr = curr->maybe_children;
     	printf(curr->name);
-    	printf("\n");
+    	printf(" \\ ");
     	subcurr = curr;
     	while(subcurr->next_sibling!=NULL)
     	{
     		subcurr = subcurr->next_sibling;
     		printf(subcurr->name);
-    		printf("\n");
+    		printf("  ");
     	}
     }
-    printf("\n");
-    // your code here, probably don't return NULL
-    return curr;
+    printf("\n\n");
+    if(dir->maybe_children)
+    	{return dir->maybe_children;}
+    else
+    	return NULL;
 }
 
 // writes a directory to its inode.
