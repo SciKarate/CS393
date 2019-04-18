@@ -1,2 +1,283 @@
 Welcome! You can exit by pressing Ctrl+C at any time...
 >> newfs testpy.dev 256 100
+inode map - 16 inodes, 128 bytes per inode, 2048 bytes & 8 blocks total
+created testpy.dev with 100 blocks of 256 bytes per block
+>> mount testpy.dev
+testpy.dev successfully mounted
+>> allocBlock
+allocated 10
+>> allocBlock
+allocated 11
+>> allocBlock
+allocated 12
+>> allocBlock
+allocated 13
+>> allocBlock
+allocated 14
+>> allocBlock
+allocated 15
+>> allocBlock
+allocated 16
+>> allocBlock
+allocated 17
+>> allocBlock
+allocated 18
+>> allocBlock
+allocated 19
+>> allocBlock
+allocated 20
+>> allocBlock
+allocated 21
+>> allocBlock
+allocated 22
+>> allocBlock
+allocated 23
+>> allocBlock
+allocated 24
+>> allocBlock
+allocated 25
+>> allocBlock
+allocated 26
+>> allocBlock
+allocated 27
+>> allocBlock
+allocated 28
+>> allocBlock
+allocated 29
+>> allocBlock
+allocated 30
+>> allocBlock
+allocated 31
+>> allocBlock
+allocated 32
+>> allocBlock
+allocated 33
+>> allocBlock
+allocated 34
+>> allocBlock
+allocated 35
+>> allocBlock
+allocated 36
+>> allocBlock
+allocated 37
+>> allocBlock
+allocated 38
+>> allocBlock
+allocated 39
+>> allocBlock
+allocated 40
+>> allocBlock
+allocated 41
+>> allocBlock
+allocated 42
+>> allocBlock
+allocated 43
+>> allocBlock
+allocated 44
+>> allocBlock
+allocated 45
+>> allocBlock
+allocated 46
+>> allocBlock
+allocated 47
+>> allocBlock
+allocated 48
+>> allocBlock
+allocated 49
+>> allocBlock
+allocated 50
+>> allocBlock
+allocated 51
+>> allocBlock
+allocated 52
+>> allocBlock
+allocated 53
+>> allocBlock
+allocated 54
+>> allocBlock
+allocated 55
+>> allocBlock
+allocated 56
+>> allocBlock
+allocated 57
+>> allocBlock
+allocated 58
+>> allocBlock
+allocated 59
+>> allocBlock
+allocated 60
+>> allocBlock
+allocated 61
+>> allocBlock
+allocated 62
+>> allocBlock
+allocated 63
+>> allocBlock
+allocated 64
+>> allocBlock
+allocated 65
+>> allocBlock
+allocated 66
+>> allocBlock
+allocated 67
+>> allocBlock
+allocated 68
+>> allocBlock
+allocated 69
+>> allocBlock
+allocated 70
+>> allocBlock
+allocated 71
+>> allocBlock
+allocated 72
+>> allocBlock
+allocated 73
+>> allocBlock
+allocated 74
+>> allocBlock
+allocated 75
+>> allocBlock
+allocated 76
+>> allocBlock
+allocated 77
+>> allocBlock
+allocated 78
+>> allocBlock
+allocated 79
+>> allocBlock
+allocated 80
+>> allocBlock
+allocated 81
+>> allocBlock
+allocated 82
+>> allocBlock
+allocated 83
+>> allocBlock
+allocated 84
+>> allocBlock
+allocated 85
+>> allocBlock
+allocated 86
+>> allocBlock
+allocated 87
+>> allocBlock
+allocated 88
+>> allocBlock
+allocated 89
+>> allocBlock
+allocated 90
+>> allocBlock
+allocated 91
+>> allocBlock
+allocated 92
+>> allocBlock
+allocated 93
+>> allocBlock
+allocated 94
+>> allocBlock
+allocated 95
+>> allocBlock
+allocated 96
+>> allocBlock
+allocated 97
+>> allocBlock
+allocated 98
+>> allocBlock
+allocated 99
+>> allocBlock
+unable to allocate block
+>> allocBlock
+unable to allocate block
+>> allocBlock
+unable to allocate block
+>> allocBlock
+unable to allocate block
+>> allocBlock
+unable to allocate block
+>> allocBlock
+unable to allocate block
+>> allocBlock
+unable to allocate block
+>> allocBlock
+unable to allocate block
+>> allocBlock
+unable to allocate block
+>> allocBlock
+unable to allocate block
+>> blockMap
+100 blocks in Block Map
+1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111
+>> freeBlock  0
+>> freeBlock  2
+>> freeBlock  4
+>> freeBlock  6
+>> freeBlock  8
+>> freeBlock  10
+>> freeBlock  12
+>> freeBlock  14
+>> freeBlock  16
+>> freeBlock  18
+>> freeBlock  20
+>> freeBlock  22
+>> freeBlock  24
+>> freeBlock  26
+>> freeBlock  28
+>> freeBlock  30
+>> freeBlock  32
+>> freeBlock  34
+>> freeBlock  36
+>> freeBlock  38
+>> freeBlock  40
+>> freeBlock  42
+>> freeBlock  44
+>> freeBlock  46
+>> freeBlock  48
+>> freeBlock  50
+>> freeBlock  52
+>> freeBlock  54
+>> freeBlock  56
+>> freeBlock  58
+>> freeBlock  60
+>> freeBlock  62
+>> freeBlock  64
+>> freeBlock  66
+>> freeBlock  68
+>> freeBlock  70
+>> freeBlock  72
+>> freeBlock  74
+>> freeBlock  76
+>> freeBlock  78
+>> freeBlock  80
+>> freeBlock  82
+>> freeBlock  84
+>> freeBlock  86
+>> freeBlock  88
+>> freeBlock  90
+>> freeBlock  92
+>> freeBlock  94
+>> freeBlock  96
+>> freeBlock  98
+>> allocINode
+allocated 1
+>> allocINode
+allocated 2
+>> unmount
+unmount successful
+>> mount testpy.dev
+testpy.dev successfully mounted
+>> blockMap
+100 blocks in Block Map
+0101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101
+>> allocBlock
+allocated 0
+>> allocBlock
+allocated 2
+>> allocBlock
+allocated 4
+>> allocINode
+allocated 3
+>> allocINode
+allocated 4
+>> unmount
+unmount successful
+>> 

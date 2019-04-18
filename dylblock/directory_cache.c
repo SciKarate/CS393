@@ -75,7 +75,7 @@ DirectoryEntry_t getChildren(DirectoryEntry_t dir, FileSystem_t fs) {
     	iNodeRead(dir->inode_ptr, 0, fs->master_block->bytes_per_block, readstring, fs);
    		//printf("\n"); printf(readstring); printf("\n");
 
-   		int items = 32;
+   		int items = 128;
 
    		char** brokestring = malloc(fs->master_block->bytes_per_block);
    		breakWords(readstring, brokestring, items, "\n |");

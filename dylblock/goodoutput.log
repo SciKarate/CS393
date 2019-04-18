@@ -5,3 +5,21 @@ created twopy.dev with 100 blocks of 2048 bytes per block
 >> mount twopy.dev
 twopy.dev successfully mounted
 >> mkdir usr
+>> mkdir etc
+>> mkdir home
+>> mkdir sbin
+>> ls
+usr	etc	home	sbin	
+>> unmount
+unmount successful
+>> mount twopy.dev
+twopy.dev successfully mounted
+>> ls
+usr	etc	home	sbin	
+>> mkdir dylan
+>> mkdir jimfix
+>> mkdir your_name_here
+>> mkdir another_name_here
+>> unmount
+unmount successful
+>> 
