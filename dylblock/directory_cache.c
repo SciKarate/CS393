@@ -70,15 +70,26 @@ DirectoryEntry_t getChildren(DirectoryEntry_t dir, FileSystem_t fs) {
 
     if(dir->maybe_children == NULL)
     {
-    	char* readstring = malloc(fs->master_block->bytes_per_block);
-    	iNodeRead(dir->inode_ptr, 0, fs->master_block->bytes_per_block, readstring, fs);
-    	printf("\n");
-    	printf(readstring);
 
     	bool first_read = true;
     	DirectoryEntry* currnode = dir;
     	while(first_read)
     	{
+    		char* readstring = malloc(fs->master_block->bytes_per_block);	
+    		iNodeRead(dir->inode_ptr, 0, fs->master_block->bytes_per_block, readstring, fs);
+    		printf("\n"); printf(readstring); printf("\n");
+
+    		int items = 32;
+
+    		char** brokestring = malloc(fs->master_block->bytes_per_block);
+    		breakWords(readstring, brokestring, items, "\n |");
+    		
+    		for(int i = 0; brokestring[i]; i+=2)
+    		{
+    			//printf(brokestring[i]); printf(brokestring[i+1]); printf(" ");
+				addChild(currnode, brokestring[i], &fs->inode_map[atoi(brokestring[i+1])]);		
+    		}
+
     		DirectoryEntry* newnode = calloc(1, sizeof(DirectoryEntry));
     		//newnode->name = ("frick"/*first string*/);
     		//newnode->inode_ptr->inode_num = (1/*number after bar*/);
@@ -122,14 +133,8 @@ DirectoryEntry_t getChildren(DirectoryEntry_t dir, FileSystem_t fs) {
 // writes a directory to its inode.
 // ignores is_dirty flag, so you should check that before calling
 // this, if you care about that kind of thing.
-void writeDirectory(DirectoryEntry_t d, FileSystem_t fs) {
-    //construct d->maybe_kids|d->maybe_kids->inode->id\n, etc
-    /*name = "hello";
-    extension = ".txt";
-    char* name_with_extension = malloc(strlen(name)+1+4);
-    strcpy(name_with_extension, name);
-    strcat(name_with_extension, extension);
-    */
+void writeDirectory(DirectoryEntry_t d, FileSystem_t fs)
+{
     if(d->maybe_children != NULL)
     {
     	//fs->master_block->bytes_per_block
@@ -137,20 +142,16 @@ void writeDirectory(DirectoryEntry_t d, FileSystem_t fs) {
     	DirectoryEntry* curr = d->maybe_children;
     	while(curr != NULL)
     	{
-    		strcat(writestring, curr->name);
-    		strcat(writestring, "|");
-    		char* strboy = malloc(8);
-    		sprintf(strboy, "%d", curr->inode_ptr->inode_num);
+    		char* strboy = malloc(strlen(curr->name)+8);
+    		sprintf(strboy, "%s|%d\n", curr->name, curr->inode_ptr->inode_num);
     		strcat(writestring, strboy);
-    		strcat(writestring, "\n");
+    		free(strboy);
     		curr = curr->next_sibling;
     	}
-    	printf(writestring);
     	iNodeWrite(d->inode_ptr, 0, fs->master_block->bytes_per_block, writestring, fs);
-    	printf("\n");
     	char* readstring = malloc(fs->master_block->bytes_per_block);
     	iNodeRead(d->inode_ptr, 0, fs->master_block->bytes_per_block, readstring, fs);
-    	printf(readstring);
+    	//printf(writestring); printf("\n"); printf(readstring);
     }
 }
 
