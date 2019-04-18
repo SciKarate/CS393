@@ -180,7 +180,7 @@ disk_addr_t getDiskAddressOfBlockRecursive(INode_t inode, block_offset_t b
                 inode->block_ptrs[b] = allocateBlock(fs->block_map);
                 return (inode->block_ptrs[b]);
             } else {
-                fprintf(stderr, "inode gdaob TODO: zero-fill reads!");
+                //fprintf(stderr, "inode gdaob TODO: zero-fill reads!");
                 return -1;
             }
         } else {

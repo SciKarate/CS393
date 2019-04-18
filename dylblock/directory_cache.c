@@ -70,36 +70,20 @@ DirectoryEntry_t getChildren(DirectoryEntry_t dir, FileSystem_t fs) {
 
     if(dir->maybe_children == NULL)
     {
-
-    	bool first_read = true;
     	DirectoryEntry* currnode = dir;
-    	while(first_read)
-    	{
-    		char* readstring = malloc(fs->master_block->bytes_per_block);	
-    		iNodeRead(dir->inode_ptr, 0, fs->master_block->bytes_per_block, readstring, fs);
-    		printf("\n"); printf(readstring); printf("\n");
+    	char* readstring = malloc(fs->master_block->bytes_per_block);	
+    	iNodeRead(dir->inode_ptr, 0, fs->master_block->bytes_per_block, readstring, fs);
+   		//printf("\n"); printf(readstring); printf("\n");
 
-    		int items = 32;
+   		int items = 32;
 
-    		char** brokestring = malloc(fs->master_block->bytes_per_block);
-    		breakWords(readstring, brokestring, items, "\n |");
-    		
-    		for(int i = 0; brokestring[i]; i+=2)
-    		{
-    			//printf(brokestring[i]); printf(brokestring[i+1]); printf(" ");
-				addChild(currnode, brokestring[i], &fs->inode_map[atoi(brokestring[i+1])]);		
-    		}
-
-    		DirectoryEntry* newnode = calloc(1, sizeof(DirectoryEntry));
-    		//newnode->name = ("frick"/*first string*/);
-    		//newnode->inode_ptr->inode_num = (1/*number after bar*/);
-    		/*
-    		if(first_read)
-    			{currnode->maybe_children = newnode; first_read = false;}
-    		else
-	    		{currnode->next_sibling = newnode;}
-    		currnode = newnode;*/
-    		first_read = false;
+   		char** brokestring = malloc(fs->master_block->bytes_per_block);
+   		breakWords(readstring, brokestring, items, "\n |");
+   		
+   		for(int i = 0; brokestring[i]; i+=2)
+   		{
+   			//printf(brokestring[i]); printf(brokestring[i+1]); printf(" ");
+			addChild(currnode, brokestring[i], &fs->inode_map[atoi(brokestring[i+1])]);		
     	}
     }
 
@@ -107,26 +91,24 @@ DirectoryEntry_t getChildren(DirectoryEntry_t dir, FileSystem_t fs) {
     
     /*DirectoryEntry* curr = dir;
     DirectoryEntry* subcurr;
-    printf(curr->name);
-    printf("\\ ");
+    printf(curr->name); printf("\\ ");
     while(curr->maybe_children!=NULL)
     {
     	curr = curr->maybe_children;
-    	printf(curr->name);
-    	printf(" \\ ");
+    	printf(curr->name); printf(" \\ ");
     	subcurr = curr;
     	while(subcurr->next_sibling!=NULL)
     	{
     		subcurr = subcurr->next_sibling;
-    		printf(subcurr->name);
-    		printf("  ");
+    		printf(subcurr->name); printf("  ");
     	}
     }
     printf("\n\n");
+    */
     if(dir->maybe_children)
     	{return dir->maybe_children;}
     else
-    	return NULL;*/
+    	return NULL;
     return NULL;
 }
 
@@ -146,6 +128,7 @@ void writeDirectory(DirectoryEntry_t d, FileSystem_t fs)
     		sprintf(strboy, "%s|%d\n", curr->name, curr->inode_ptr->inode_num);
     		strcat(writestring, strboy);
     		free(strboy);
+    		curr->is_dirty = false;
     		curr = curr->next_sibling;
     	}
     	iNodeWrite(d->inode_ptr, 0, fs->master_block->bytes_per_block, writestring, fs);
@@ -153,12 +136,28 @@ void writeDirectory(DirectoryEntry_t d, FileSystem_t fs)
     	iNodeRead(d->inode_ptr, 0, fs->master_block->bytes_per_block, readstring, fs);
     	//printf(writestring); printf("\n"); printf(readstring);
     }
+    d->is_dirty = false;
 }
 
 // recursively writes all of the dirty directory entries back to disk
 void flushDirectoryCache(DirectoryEntry_t dir, FileSystem_t fs)
 {
-	writeDirectory(dir, fs);
+	if(dir->next_sibling != NULL)
+		{flushDirectoryCache(dir->next_sibling, fs);}
+	if(dir->is_dirty == true)
+		{writeDirectory(dir, fs);}
+	if(dir->maybe_children != NULL)
+	{
+		DirectoryEntry_t curr = dir->maybe_children;
+		while(curr != NULL)
+		{
+			if(curr->is_dirty == true) {writeDirectory(dir, fs); return;}
+			curr = curr->next_sibling;
+		}
+		flushDirectoryCache(dir->maybe_children, fs);
+		return;
+	}
+	return;
 }
 
 // Helper function for getChildren, in case you need one. 
