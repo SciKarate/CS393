@@ -1,5 +1,7 @@
 #include "directory_cache.h"
 #include <assert.h>
+#include <string.h>
+#include <math.h>
 
 // Allocate a DirectoryEntry for this name->inode mapping and add it
 // to the children of parent.
@@ -59,7 +61,40 @@ DirectoryEntry_t getChildren(DirectoryEntry_t dir, FileSystem_t fs) {
     assert(dir->inode_ptr && "getChildren, inode_ptr == null");
     assert(dir->inode_ptr->type == DirectoryType && "getChildren of a non-directory");
 
-    DirectoryEntry* curr = dir;
+    //read the block of memory pointed to by dir->inode
+    //this will look, for root with child fruit and siblings meat, pie:
+    //	fruit|1\nmeat|2\npie|3\n
+    //read inode at address 1 into root's maybe_kids
+    //read inode at address 2 into root's maybe_kids' sibling
+    //read inode at address 3 into root's maybe kids' sibling's sibling.
+
+    if(dir->maybe_children == NULL)
+    {
+    	char* readstring = malloc(fs->master_block->bytes_per_block);
+    	iNodeRead(dir->inode_ptr, 0, fs->master_block->bytes_per_block, readstring, fs);
+    	printf("\n");
+    	printf(readstring);
+
+    	bool first_read = true;
+    	DirectoryEntry* currnode = dir;
+    	while(first_read)
+    	{
+    		DirectoryEntry* newnode = calloc(1, sizeof(DirectoryEntry));
+    		//newnode->name = ("frick"/*first string*/);
+    		//newnode->inode_ptr->inode_num = (1/*number after bar*/);
+    		/*
+    		if(first_read)
+    			{currnode->maybe_children = newnode; first_read = false;}
+    		else
+	    		{currnode->next_sibling = newnode;}
+    		currnode = newnode;*/
+    		first_read = false;
+    	}
+    }
+
+    flushDirectoryCache(dir, fs);
+    
+    /*DirectoryEntry* curr = dir;
     DirectoryEntry* subcurr;
     printf(curr->name);
     printf("\\ ");
@@ -80,18 +115,49 @@ DirectoryEntry_t getChildren(DirectoryEntry_t dir, FileSystem_t fs) {
     if(dir->maybe_children)
     	{return dir->maybe_children;}
     else
-    	return NULL;
+    	return NULL;*/
+    return NULL;
 }
 
 // writes a directory to its inode.
 // ignores is_dirty flag, so you should check that before calling
 // this, if you care about that kind of thing.
 void writeDirectory(DirectoryEntry_t d, FileSystem_t fs) {
-    // your code here
+    //construct d->maybe_kids|d->maybe_kids->inode->id\n, etc
+    /*name = "hello";
+    extension = ".txt";
+    char* name_with_extension = malloc(strlen(name)+1+4);
+    strcpy(name_with_extension, name);
+    strcat(name_with_extension, extension);
+    */
+    if(d->maybe_children != NULL)
+    {
+    	//fs->master_block->bytes_per_block
+    	char* writestring = malloc(fs->master_block->bytes_per_block);
+    	DirectoryEntry* curr = d->maybe_children;
+    	while(curr != NULL)
+    	{
+    		strcat(writestring, curr->name);
+    		strcat(writestring, "|");
+    		char* strboy = malloc(8);
+    		sprintf(strboy, "%d", curr->inode_ptr->inode_num);
+    		strcat(writestring, strboy);
+    		strcat(writestring, "\n");
+    		curr = curr->next_sibling;
+    	}
+    	printf(writestring);
+    	iNodeWrite(d->inode_ptr, 0, fs->master_block->bytes_per_block, writestring, fs);
+    	printf("\n");
+    	char* readstring = malloc(fs->master_block->bytes_per_block);
+    	iNodeRead(d->inode_ptr, 0, fs->master_block->bytes_per_block, readstring, fs);
+    	printf(readstring);
+    }
 }
 
 // recursively writes all of the dirty directory entries back to disk
-void flushDirectoryCache(DirectoryEntry_t dir, FileSystem_t fs) {
+void flushDirectoryCache(DirectoryEntry_t dir, FileSystem_t fs)
+{
+	writeDirectory(dir, fs);
 }
 
 // Helper function for getChildren, in case you need one. 
