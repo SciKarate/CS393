@@ -9,6 +9,7 @@ int main(int argc, char **argv) {
         INodeAddr_t i_num = allocateINode(fs);
         INode_t     inode = getINode(fs, i_num);
         addChild(fs->root_dir, "test1", inode);
+        getChildren(fs->root_dir, fs);
         unmount(fs);
     }
     {

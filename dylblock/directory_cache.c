@@ -71,15 +71,15 @@ DirectoryEntry_t getChildren(DirectoryEntry_t dir, FileSystem_t fs) {
     if(dir != NULL && dir->maybe_children == NULL)
     {
     	DirectoryEntry* currnode = dir;
-    	char* readstring = malloc(fs->master_block->bytes_per_block);	
+    	char* readstring = calloc(1, fs->master_block->bytes_per_block);	
     	iNodeRead(dir->inode_ptr, 0, fs->master_block->bytes_per_block, readstring, fs);
-   		//printf("\n"); printf(readstring); printf("\n");
+   		printf("\n"); printf(readstring); printf("\n");
 
     	//number of pipes * 2
    		int items = countOccurrences(readstring, '|', strlen(readstring));
    		items *= 2;
 
-   		char** brokestring = malloc(fs->master_block->bytes_per_block);
+   		char** brokestring = calloc(1, fs->master_block->bytes_per_block);
    		breakWords(readstring, brokestring, items, "\n |");
    		
    		for(int i = 0; brokestring[i]; i+=2)
@@ -109,7 +109,7 @@ DirectoryEntry_t getChildren(DirectoryEntry_t dir, FileSystem_t fs) {
     		printf(subcurr->name); printf("  ");
     	}
     }
-    printf("\n\n"); */
+    printf("\n\n");*/
 
     if(dir->maybe_children)
     	{return dir->maybe_children;}
@@ -126,11 +126,11 @@ void writeDirectory(DirectoryEntry_t d, FileSystem_t fs)
     if(d->maybe_children != NULL)
     {
     	//fs->master_block->bytes_per_block
-    	char* writestring = malloc(fs->master_block->bytes_per_block);
+    	char* writestring = calloc(1,fs->master_block->bytes_per_block);
     	DirectoryEntry* curr = d->maybe_children;
     	while(curr != NULL)
     	{
-    		char* strboy = malloc(strlen(curr->name)+8);
+    		char* strboy = calloc(1,strlen(curr->name)+8);
     		sprintf(strboy, "%s|%d\n", curr->name, curr->inode_ptr->inode_num);
     		strcat(writestring, strboy);
     		free(strboy);
@@ -140,7 +140,7 @@ void writeDirectory(DirectoryEntry_t d, FileSystem_t fs)
     	iNodeWrite(d->inode_ptr, 0, fs->master_block->bytes_per_block, writestring, fs);
     	//char* readstring = malloc(fs->master_block->bytes_per_block);
     	//iNodeRead(d->inode_ptr, 0, fs->master_block->bytes_per_block, readstring, fs);
-    	//printf(writestring); printf("\n"); printf(readstring);
+    	//printf(writestring); printf("\n"); //printf(readstring);
     }
     d->is_dirty = false;
 }
