@@ -72,6 +72,9 @@ int main(int argc, char** argv) {
                 if (num_words == 2 && device_name != NULL) {
                     main_filesystem = mount(device_name);
                     main_current_dir = main_filesystem->root_dir;
+               //cd ..
+                //	main_filesystem->indices = malloc(main_filesystem->master_block->bytes_per_block);
+                //	main_filesystem->currind = 0;
                 } else {
                     fprintf(stderr, "usage: mount <device file name>\n");
                 }
@@ -121,9 +124,25 @@ int main(int argc, char** argv) {
                     char *target_dir = arguments[1];
                     DirectoryEntry_t d = getChildren(main_current_dir, main_filesystem);
                     bool found = false;
+                    /*if(strcmp("..", target_dir) == 0)
+                    {
+                    	found = true;
+                    	if(main_filesystem->currind > 0)
+                    	{
+                    		int index = main_filesystem->indices[main_filesystem->currind];
+                    		char* readstring = malloc(main_filesystem->master_block->bytes_per_block);
+                    		INode nodeboy = main_filesystem->inode_map[index];
+                    		iNodeRead(&nodeboy, 0, main_filesystem->master_block->bytes_per_block, readstring, main_filesystem);
+                    		main_filesystem->currind--;
+                    	}
+                    }*/
                     while (d != NULL && !found) {
                         if (strcmp(d->name, target_dir) == 0) {
                             if (d->inode_ptr->type == DirectoryType) {
+                            	//cd ..
+                            	//main_filesystem->indices[main_filesystem->currind] = main_current_dir->inode_ptr->inode_num;
+                                //main_filesystem->currind++;
+                              	//cd ..
                                 main_current_dir = d;
                                 found = true;
                             } else {

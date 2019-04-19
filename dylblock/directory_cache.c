@@ -68,7 +68,7 @@ DirectoryEntry_t getChildren(DirectoryEntry_t dir, FileSystem_t fs) {
     //read inode at address 2 into root's maybe_kids' sibling
     //read inode at address 3 into root's maybe kids' sibling's sibling.
 
-    if(dir->maybe_children == NULL)
+    if(dir != NULL && dir->maybe_children == NULL)
     {
     	DirectoryEntry* currnode = dir;
     	char* readstring = malloc(fs->master_block->bytes_per_block);	
@@ -109,8 +109,8 @@ DirectoryEntry_t getChildren(DirectoryEntry_t dir, FileSystem_t fs) {
     		printf(subcurr->name); printf("  ");
     	}
     }
-    printf("\n\n");
-    */
+    printf("\n\n"); */
+
     if(dir->maybe_children)
     	{return dir->maybe_children;}
     else
@@ -138,8 +138,8 @@ void writeDirectory(DirectoryEntry_t d, FileSystem_t fs)
     		curr = curr->next_sibling;
     	}
     	iNodeWrite(d->inode_ptr, 0, fs->master_block->bytes_per_block, writestring, fs);
-    	char* readstring = malloc(fs->master_block->bytes_per_block);
-    	iNodeRead(d->inode_ptr, 0, fs->master_block->bytes_per_block, readstring, fs);
+    	//char* readstring = malloc(fs->master_block->bytes_per_block);
+    	//iNodeRead(d->inode_ptr, 0, fs->master_block->bytes_per_block, readstring, fs);
     	//printf(writestring); printf("\n"); printf(readstring);
     }
     d->is_dirty = false;

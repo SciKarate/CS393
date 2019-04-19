@@ -14,6 +14,8 @@ typedef struct FileSystem {
     bit_set_t          block_map;
     inode_map_t        inode_map;
     directory_cache_t  root_dir;   // this is also our Directory Cache
+    int*				indices;
+    int 				currind;
     // TODO: block_cache_t  block_cache;
 } FileSystem, *FileSystem_t, *file_system_t;
 
