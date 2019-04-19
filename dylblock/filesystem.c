@@ -121,6 +121,17 @@ file_system_t mount(char *device_filename) {
     return ret;
 }
 
+//avoid memory leakage --- doesn't work
+void unmountDirEntries(file_system_t fs, DirectoryEntry_t dir)
+{
+	if(dir->maybe_children != NULL)
+		{unmountDirEntries(fs, dir->maybe_children);}
+	if(dir->next_sibling != NULL)
+		{unmountDirEntries(fs, dir->next_sibling);}
+	free(dir);
+	return;
+}
+
 void unmount(file_system_t fs) {
     // flush the directory cache (which may modify inodes / allocate
     // blocks
@@ -135,6 +146,8 @@ void unmount(file_system_t fs) {
                                 fs->master_block->inode_count);
 
     // TODO: flush the block cache when we have one
+  //doesn't work
+    //unmountDirEntries(fs, fs->root_dir);
     // close the file
     int closeZero = closeBlockDevice(fs->block_device);
     if (writeZero == 0 && closeZero == 0 && inmZero == 0) {

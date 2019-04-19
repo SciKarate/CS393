@@ -148,7 +148,10 @@ int main(int argc, char** argv) {
                   //cd ..
                     if(strcmp("..", target_dir) == 0)
                     {
-                    	main_current_dir = dirParentSearch(main_filesystem->root_dir, main_current_dir, main_filesystem);
+                    	if(main_current_dir == main_filesystem->root_dir)
+                    		printf("You're in root! Don't do that!\n");
+                    	else
+                    		main_current_dir = dirParentSearch(main_filesystem->root_dir, main_current_dir, main_filesystem);
                     	found = true;
                     }
                     while (d != NULL && !found) {

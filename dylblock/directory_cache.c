@@ -14,6 +14,7 @@ void addChild(DirectoryEntry_t parent, char *name, INode_t inode){
     newkid->next_sibling = NULL;
     newkid->is_dirty = true;
 
+  //traverse linked list to find first available node placement
     if(parent->maybe_children != NULL)
     {
     	DirectoryEntry* curr = parent->maybe_children;
@@ -64,58 +65,39 @@ DirectoryEntry_t getChildren(DirectoryEntry_t dir, FileSystem_t fs) {
     //read the block of memory pointed to by dir->inode
     //this will look, for root with child fruit and siblings meat, pie:
     //	fruit|1\nmeat|2\npie|3\n
-    //read inode at address 1 into root's maybe_kids
-    //read inode at address 2 into root's maybe_kids' sibling
-    //read inode at address 3 into root's maybe kids' sibling's sibling.
 
+  //verify we aren't about to read a null pointer.
+  //also, only read in data if we haven't already read dir before.
     if(dir != NULL && dir->maybe_children == NULL)
     {
     	DirectoryEntry* currnode = dir;
     	char* readstring = calloc(1, fs->master_block->bytes_per_block);	
     	iNodeRead(dir->inode_ptr, 0, fs->master_block->bytes_per_block, readstring, fs);
-   		//printf("\n"); printf(readstring); printf("\n");
 
-    	//number of pipes * 2
+   	  //we're splitting each dir entry by pipe AND by newline.
+   	  //so each dir entry will take 2 spots. so we alloc pipes * 2.
    		int items = countOccurrences(readstring, '|', strlen(readstring));
    		items *= 2;
 
    		char** brokestring = calloc(1, fs->master_block->bytes_per_block);
    		breakWords(readstring, brokestring, items, "\n |");
    		
+   	  //iterate through the broken string and create direntries.
+   	  //we iterate by i+=2 because we broke by pipe and newline above.
    		for(int i = 0; brokestring[i]; i+=2)
-   		{
-   			//printf(brokestring[i]); printf(brokestring[i+1]); printf(" ");
-			addChild(currnode, brokestring[i], &fs->inode_map[atoi(brokestring[i+1])]);		
-    	}
+   			{addChild(currnode, brokestring[i], &fs->inode_map[atoi(brokestring[i+1])]);}
+    	//free(readstring); //this causes problems and doesn't help
+    	free(brokestring);
     }
+  //make sure to add a '.' entry for 'cd .'
     if(dir->maybe_children == NULL)
-    {
-    	addChild(dir, ".", dir->inode_ptr);
-    }
-
+    	{addChild(dir, ".", dir->inode_ptr);}
+  //flush the cache to write data.
+  //should only be useful if we didn't just read.
     flushDirectoryCache(dir, fs);
-    
-    /*DirectoryEntry* curr = dir;
-    DirectoryEntry* subcurr;
-    printf(curr->name); printf("\\ ");
-    while(curr->maybe_children!=NULL)
-    {
-    	curr = curr->maybe_children;
-    	printf(curr->name); printf(" \\ ");
-    	subcurr = curr;
-    	while(subcurr->next_sibling!=NULL)
-    	{
-    		subcurr = subcurr->next_sibling;
-    		printf(subcurr->name); printf("  ");
-    	}
-    }
-    printf("\n\n");*/
 
-    if(dir->maybe_children)
-    	{return dir->maybe_children;}
-    else
-    	return NULL;
-    return NULL;
+  //return dir's children, if they exist
+    return dir->maybe_children;
 }
 
 // writes a directory to its inode.
@@ -130,7 +112,7 @@ void writeDirectory(DirectoryEntry_t d, FileSystem_t fs)
     	DirectoryEntry* curr = d->maybe_children;
     	while(curr != NULL)
     	{
-    		char* strboy = calloc(1,strlen(curr->name)+8);
+    		char* strboy = calloc(1,fs->master_block->bytes_per_block);
     		sprintf(strboy, "%s|%d\n", curr->name, curr->inode_ptr->inode_num);
     		strcat(writestring, strboy);
     		free(strboy);
@@ -138,9 +120,7 @@ void writeDirectory(DirectoryEntry_t d, FileSystem_t fs)
     		curr = curr->next_sibling;
     	}
     	iNodeWrite(d->inode_ptr, 0, fs->master_block->bytes_per_block, writestring, fs);
-    	//char* readstring = malloc(fs->master_block->bytes_per_block);
-    	//iNodeRead(d->inode_ptr, 0, fs->master_block->bytes_per_block, readstring, fs);
-    	//printf(writestring); printf("\n"); //printf(readstring);
+    	free(writestring);
     }
     d->is_dirty = false;
 }
