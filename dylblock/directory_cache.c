@@ -75,7 +75,9 @@ DirectoryEntry_t getChildren(DirectoryEntry_t dir, FileSystem_t fs) {
     	iNodeRead(dir->inode_ptr, 0, fs->master_block->bytes_per_block, readstring, fs);
    		//printf("\n"); printf(readstring); printf("\n");
 
-   		int items = 128;
+    	//number of pipes * 2
+   		int items = countOccurrences(readstring, '|', strlen(readstring));
+   		items *= 2;
 
    		char** brokestring = malloc(fs->master_block->bytes_per_block);
    		breakWords(readstring, brokestring, items, "\n |");
@@ -85,6 +87,10 @@ DirectoryEntry_t getChildren(DirectoryEntry_t dir, FileSystem_t fs) {
    			//printf(brokestring[i]); printf(brokestring[i+1]); printf(" ");
 			addChild(currnode, brokestring[i], &fs->inode_map[atoi(brokestring[i+1])]);		
     	}
+    }
+    if(dir->maybe_children == NULL)
+    {
+    	addChild(dir, ".", dir->inode_ptr);
     }
 
     flushDirectoryCache(dir, fs);

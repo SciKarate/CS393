@@ -9,13 +9,13 @@ twopy.dev successfully mounted
 >> mkdir home
 >> mkdir sbin
 >> ls
-usr	etc	home	sbin	
+.	usr	etc	home	sbin	
 >> unmount
 unmount successful
 >> mount twopy.dev
 twopy.dev successfully mounted
 >> ls
-usr	etc	home	sbin	
+.	usr	etc	home	sbin	
 >> mkdir dylan
 >> mkdir jimfix
 >> mkdir your_name_here
