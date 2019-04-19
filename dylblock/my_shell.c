@@ -20,6 +20,27 @@ bool equals(char *a, char *b, bool noprefix) {
     return !(strncmp(a,b,strlen(a)));
 }
 
+//implements cd..
+DirectoryEntry_t dirParentSearch(DirectoryEntry_t prev, DirectoryEntry_t seekdir, file_system_t fs)
+{
+	DirectoryEntry_t curr = prev->maybe_children;
+    while(curr != NULL)
+    {
+    	if(curr->maybe_children)
+    	{
+    		DirectoryEntry_t check = dirParentSearch(curr, seekdir, fs);
+    		if(check) {return check;}
+    	}
+        if(curr->inode_ptr->inode_num == seekdir->inode_ptr->inode_num)
+        {
+        	if(curr->name == seekdir->name)
+            	{return prev;}
+        }
+        curr = curr->next_sibling;
+    }
+    return NULL;
+}
+
 const char *delim = " \t"; // separating tokens
 
 int main(int argc, char** argv) {
@@ -124,18 +145,12 @@ int main(int argc, char** argv) {
                     char *target_dir = arguments[1];
                     DirectoryEntry_t d = getChildren(main_current_dir, main_filesystem);
                     bool found = false;
-                    /*if(strcmp("..", target_dir) == 0)
+                  //cd ..
+                    if(strcmp("..", target_dir) == 0)
                     {
+                    	main_current_dir = dirParentSearch(main_filesystem->root_dir, main_current_dir, main_filesystem);
                     	found = true;
-                    	if(main_filesystem->currind > 0)
-                    	{
-                    		int index = main_filesystem->indices[main_filesystem->currind];
-                    		char* readstring = malloc(main_filesystem->master_block->bytes_per_block);
-                    		INode nodeboy = main_filesystem->inode_map[index];
-                    		iNodeRead(&nodeboy, 0, main_filesystem->master_block->bytes_per_block, readstring, main_filesystem);
-                    		main_filesystem->currind--;
-                    	}
-                    }*/
+                    }
                     while (d != NULL && !found) {
                         if (strcmp(d->name, target_dir) == 0) {
                             if (d->inode_ptr->type == DirectoryType) {
@@ -249,5 +264,3 @@ int main(int argc, char** argv) {
 
     return 0;
 }
-
-

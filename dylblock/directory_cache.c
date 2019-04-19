@@ -73,7 +73,7 @@ DirectoryEntry_t getChildren(DirectoryEntry_t dir, FileSystem_t fs) {
     	DirectoryEntry* currnode = dir;
     	char* readstring = calloc(1, fs->master_block->bytes_per_block);	
     	iNodeRead(dir->inode_ptr, 0, fs->master_block->bytes_per_block, readstring, fs);
-   		printf("\n"); printf(readstring); printf("\n");
+   		//printf("\n"); printf(readstring); printf("\n");
 
     	//number of pipes * 2
    		int items = countOccurrences(readstring, '|', strlen(readstring));
