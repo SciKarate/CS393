@@ -1,4 +1,4 @@
-# CS393
+# Custom Unix Filesystem
 Currently supports:
 > A master block
 > a blockmap
